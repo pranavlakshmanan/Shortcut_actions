@@ -1,0 +1,63 @@
+environment:
+  name: "PointMass2D"
+  dt: 0.01
+  mass: 1.0
+  damping: 0.1
+
+model:
+  state_dim: 4
+  action_dim: 2
+  max_seq_len: 10
+  # Identical architecture for fair comparison
+  hidden_dims: [512, 512, 256]
+
+training:
+  # Bootstrap hierarchy for shortcut network
+  bootstrap_levels: [0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0]
+
+  # Data generation (same for both networks)
+  num_trajectories: 3000  # Smaller for faster comparison
+  val_trajectories: 300
+  traj_length: 50
+  action_seq_len: 10
+
+  # Loss weighting (shortcut network only)
+  lambda_v: 0.6      # 60% velocity matching (physics grounding)
+  lambda_sc: 0.4     # 40% self-consistency (temporal scaling)
+  lambda_v_mag: 0.2  # 20% velocity magnitude matching (Option A - prevents zero velocity)
+  lambda_casc: 0.2   # 20% cascaded self-consistency (Option B - teaches composition)
+
+  # Batch composition (shortcut network only)
+  velocity_ratio: 0.6  # 60% velocity matching, 40% self-consistency
+
+  # Training parameters
+  epochs: 40  # Quick 5-epoch test
+  learning_rate: 0.0005
+  batch_size: 32
+  weight_decay: 0.0001
+  max_horizon: 1.0
+
+# Device configuration
+device: "auto"
+
+# Experiment tracking
+wandb:
+  enabled: true
+  project: "shortcut-two-network-comparison"
+  entity: null
+  tags: ["two-network", "sequential-vs-shortcut", "comparison"]
+  notes: "Fair comparison between Sequential baseline and Shortcut predictor"
+
+# Evaluation settings
+evaluation:
+  # Test d-levels for comprehensive evaluation
+  test_d_levels: [0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0]
+
+  # Additional test horizons for detailed analysis
+  test_horizons: [0.1, 0.5, 1.0]
+
+  # Success criteria
+  target_speedup: 10.0      # Minimum speedup for success
+  max_accuracy_ratio: 1.5   # Maximum accuracy degradation
+
+seed: 42

@@ -1,0 +1,7 @@
+torch>=2.5.1
+torchvision>=0.20.1
+"numpy<2"
+PyYAML>=6.0
+wandb>=0.22.0
+matplotlib>=3.7.1
+tqdm>=4.65.0

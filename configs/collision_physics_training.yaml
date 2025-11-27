@@ -1,0 +1,43 @@
+# Model architecture
+model:
+  state_dim: 4
+  action_dim: 2
+  max_seq_len: 20
+  hidden_dims: [64, 64, 64, 64]
+
+# Training hyperparameters
+training:
+  epochs: 9
+  batch_size: 64
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  
+  # Bootstrap hierarchy levels
+  supervised_levels: [0.01, 0.04, 0.08, 0.16, 0.64]
+  bootstrap_levels: [0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0]
+  
+  # Loss weights
+  lambda_v: 0.6      # Velocity matching (60%)
+  lambda_sc: 0.4     # Self-consistency (40%)
+  lambda_v_mag: 0.05  # Velocity magnitude
+  lambda_casc: 0.2   # Cascaded consistency
+  
+  # Training settings
+  max_horizon: 1.0
+  use_improved_velocity_loss: true
+
+# Environment physics - MUST MATCH DATA GENERATION
+environment:
+  dt: 0.01
+  mass: 1.0
+  damping: 0.0              # ← Changed from 0.1 to 0.0
+  boundaries: 2.0            # ← Changed from 5.0 to 2.0
+  collision_restitution: 1.0 # ← Changed from 0.8 to 1.0
+
+# Collision dataset configuration
+data_generation:
+  collision_bias: 0.7  # 70% collision scenarios
+  scenario_distribution:
+    wall_collisions: 0.5
+    corner_bouncing: 0.3
+    smooth_motion: 0.2

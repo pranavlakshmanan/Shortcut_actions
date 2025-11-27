@@ -1,0 +1,156 @@
+📊 Weights & Biases initialized: collision-fix-1ep-seed42
+   Project: collision-physics-fix
+   URL: https://wandb.ai/pranavlakshman79-lossfunk/collision-physics-fix/runs/rj57j0sk
+================================================================================
+COLLISION PHYSICS TRAINING
+================================================================================
+Config: configs/collision_physics_training.yaml
+Epochs: 1
+Batch size: 64
+Learning rate: 0.001
+Random seed: 42
+
+🔧 Device: cuda
+
+================================================================================
+DATASET CREATION - GROUNDED BOOTSTRAP HIERARCHY
+================================================================================
+
+🎯 Training Strategy:
+   Sequential Model:
+      - Supervised at: dt=0.01 ONLY
+      - Supervision: DENSE (every timestep in trajectory)
+      - Test at dt=1.0: 100x extrapolation (expected: FAIL)
+
+   Shortcut Model:
+      - Supervised at: [0.01, 0.04, 0.08, 0.16, 0.64]
+      - Self-consistency at: [0.02, 0.32, 1.0]
+      - Supervision: SPARSE (5 anchor points)
+      - Test at dt=1.0: 1.56x extrapolation from 0.64 (expected: SUCCESS)
+
+📦 Creating Sequential dataset (dt=0.01 only)...
+   ✅ Sequential training: 500000 samples
+   ✅ Sequential validation: 50000 samples
+
+📦 Creating Shortcut dataset (supervised at [0.01, 0.04, 0.08, 0.16, 0.64])...
+
+📊 Generating Sparse Multi-Timestep Dataset
+   Source: collision_train.pkl
+   Trajectories: 5000
+   Supervised levels: [0.01, 0.04, 0.08, 0.16, 0.64]
+✅ Generated 2060000 supervised samples
+
+   Timestep distribution:
+   dt=0.01s: 500,000 samples (24.3%)
+   dt=0.04s: 485,000 samples (23.5%)
+   dt=0.08s: 465,000 samples (22.6%)
+   dt=0.16s: 425,000 samples (20.6%)
+   dt=0.64s: 185,000 samples (9.0%)
+
+📊 Generating Sparse Multi-Timestep Dataset
+   Source: collision_val.pkl
+   Trajectories: 500
+   Supervised levels: [0.01, 0.04, 0.08, 0.16, 0.64]
+✅ Generated 206000 supervised samples
+
+   Timestep distribution:
+   dt=0.01s: 50,000 samples (24.3%)
+   dt=0.04s: 48,500 samples (23.5%)
+   dt=0.08s: 46,500 samples (22.6%)
+   dt=0.16s: 42,500 samples (20.6%)
+   dt=0.64s: 18,500 samples (9.0%)
+   ✅ Shortcut training: 2060000 samples
+   ✅ Shortcut validation: 206000 samples
+
+✅ Datasets and dataloaders created
+================================================================================
+
+🏗️  Creating Models...
+  Sequential params: 16,260
+  Shortcut params: 16,260
+  Environment: dt=0.01, mass=1.0, damping=0.0
+  Boundaries: [-2.0, 2.0], restitution=1.0
+
+🚂 Initializing Two-Network Trainer...
+
+🎯 Grounded Bootstrap Hierarchy:
+   Supervised (ground truth): [0.01, 0.04, 0.08, 0.16, 0.64]
+   Self-consistency (learned): [0.02, 0.32, 1.0]
+   Batch split: 60% velocity / 40% self-consistency
+✅ Bootstrap Trainer initialized with Grounded Hierarchy
+🔄 Two-Network Training System Initialized
+   Sequential Model: 16,260 parameters
+   Shortcut Model: 16,260 parameters
+
+🎯 Training on Collision Physics...
+   Sequential: Trained ONLY on d=0.01 (physics grounding)
+   Shortcut: Bootstrap trained on d=[0.01, 0.02, ..., 1.0]
+   Dataset: 32188 train batches, 3219 val batches
+
+================================================================================
+STARTING TWO-NETWORK TRAINING
+================================================================================
+
+🎯 TRAINING CONFIGURATION:
+   Epochs: 1
+
+   📊 Sequential Model:
+      - Supervised: dt=0.01 ONLY
+      - Training samples: 500000
+      - Expected at dt=1.0: CATASTROPHIC FAILURE (100x extrapolation)
+
+   📊 Shortcut Model:
+      - Supervised: [0.01, 0.04, 0.08, 0.16, 0.64]
+      - Self-consistency: [0.02, 0.32, 1.0]
+      - Training samples: 2060000
+      - Expected at dt=1.0: MAINTAINS ACCURACY (1.56x extrapolation)
+================================================================================
+
+✅ Separate dataloaders created for Sequential model
+
+============================================================
+EPOCH 1/1
+============================================================
+
+🔵 Training Sequential Model...
+DEBUG SC Loss - Step 0, d=0.02, sc_loss_raw=0.003763, samples=9
+DEBUG SC Loss - Step 0, d=0.32, sc_loss_raw=0.013970, samples=8
+DEBUG SC Loss - Step 0, d=1.00, sc_loss_raw=0.009728, samples=9
+DEBUG SC Loss - Step 1, d=0.02, sc_loss_raw=0.000409, samples=7
+DEBUG SC Loss - Step 1, d=0.32, sc_loss_raw=0.000983, samples=8
+DEBUG SC Loss - Step 1, d=1.00, sc_loss_raw=0.001911, samples=11
+DEBUG SC Loss - Step 2, d=0.02, sc_loss_raw=0.000686, samples=4
+DEBUG SC Loss - Step 2, d=0.32, sc_loss_raw=0.001906, samples=16
+DEBUG SC Loss - Step 2, d=1.00, sc_loss_raw=0.001484, samples=6
+DEBUG SC Loss - Step 3, d=0.02, sc_loss_raw=0.000549, samples=14
+DEBUG SC Loss - Step 3, d=0.32, sc_loss_raw=0.000108, samples=4
+DEBUG SC Loss - Step 3, d=1.00, sc_loss_raw=0.000996, samples=8
+DEBUG SC Loss - Step 4, d=0.02, sc_loss_raw=0.001920, samples=8
+DEBUG SC Loss - Step 4, d=0.32, sc_loss_raw=0.002790, samples=6
+DEBUG SC Loss - Step 4, d=1.00, sc_loss_raw=0.002170, samples=12
+   Sequential  - Train: 0.0285, Val: 0.0015
+   Shortcut    - Train: 39.8962, Val: 0.9388
+   🔍 Multi-Horizon Validation:
+       Testing 4 different time horizons...
+      dt=0.01: Sequential=0.001, Shortcut=0.010 (ratio: 0.1x)
+      dt=0.10: Sequential=0.012, Shortcut=0.103 (ratio: 0.1x)
+      dt=0.50: Sequential=1.206, Shortcut=1.078 (ratio: 1.1x)
+      dt=1.00: Sequential=6.516, Shortcut=6.034 (ratio: 1.1x)
+      🎯 Large timestep performance gap: 1.1x (Sequential/Shortcut at dt=1.0)
+      ⚠️  Differentiation still developing...
+     ✓ Saved best Sequential model (val_loss=0.0015)
+     ✓ Saved best Shortcut model (val_loss=0.9388)
+
+✅ Training Complete!
+  Best Sequential Loss: 0.001464
+  Best Shortcut Loss: 0.938756
+
+💾 Saving Collision-Trained Models...
+  ✓ Sequential saved to: experiments/sequential_baseline_model.pt
+  ✓ Shortcut saved to: experiments/shortcut_bootstrap_model.pt
+  ✓ Training summary saved to: experiments/collision_training_summary.pt
+
+📊 Logging final results to Weights & Biases...
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mcollision-fix-1ep-seed42[0m at: [34m[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/run-20251121_191015-rj57j0sk/logs[0m

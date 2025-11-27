@@ -1,0 +1,53 @@
+environment:
+  name: "PointMass2D"
+  dt: 0.01
+  mass: 1.0
+  damping: 0.1
+
+model:
+  state_dim: 4
+  action_dim: 2
+  max_seq_len: 10
+  hidden_dims: [512, 512, 256]  # Larger network for harder task
+
+training:
+  # Bootstrap hierarchy (powers of 2)
+  bootstrap_levels: [0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0]
+
+  # Data generation
+  num_trajectories: 5000
+  val_trajectories: 500
+  traj_length: 50
+  action_seq_len: 10
+
+  # Loss weighting
+  lambda_v: 0.6    # 60% velocity matching (physics grounding)
+  lambda_sc: 0.4   # 40% self-consistency (temporal scaling)
+
+  # Batch composition
+  velocity_ratio: 0.6  # 60% velocity matching, 40% self-consistency
+
+  # Training parameters
+  epochs: 50
+  learning_rate: 0.0005  # Lower LR for stability with larger network
+  batch_size: 32
+  weight_decay: 0.0001
+  max_horizon: 1.0
+
+# Device configuration
+device: "auto"
+
+# Experiment tracking
+wandb:
+  enabled: true
+  project: "shortcut-bootstrap-predictor"
+  entity: null
+  tags: ["bootstrap", "shortcut-prediction", "multi-scale"]
+  notes: "Bootstrap hierarchy training across multiple time scales"
+
+# Evaluation across all d-levels
+evaluation:
+  test_d_levels: [0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0]
+  test_horizons: [0.1, 0.5, 1.0]
+
+seed: 42

@@ -1,0 +1,38 @@
+environment:
+  name: "PointMass2D"
+  dt: 0.01
+  mass: 1.0
+  damping: 0.1
+
+model:
+  state_dim: 4
+  action_dim: 2
+  max_seq_len: 10
+  hidden_dims: [256, 256, 128]
+
+training:
+  num_trajectories: 5000  # More diversity to combat overfitting
+  val_trajectories: 500   # More validation data
+  traj_length: 50         # Longer trajectories
+  action_seq_len: 5
+  batch_size: 32
+  epochs: 10
+  learning_rate: 0.001  # Lower LR to prevent instability
+  weight_decay: 0.0001     # L2 regularization
+  lambda_v: 0.6   # 60% weight on velocity matching
+  lambda_sc: 0.4  # 40% weight on self-consistency
+  max_horizon: 1.0  # Fixed: always train up to 1.0 second predictions
+
+# Device configuration - run test_gpu.py to check compatibility
+# Options: "cpu", "cuda", "auto" (auto-detect best available)
+device: "auto"  # Will use CUDA if available and compatible, otherwise CPU
+
+# Experiment tracking
+wandb:
+  enabled: true
+  project: "shortcut-state-predictor"
+  entity: null  # Optional: your wandb username/team
+  tags: ["neural-ode", "shortcut-prediction", "point-mass-2d"]
+  notes: "Shortcut state predictor using velocity field networks"
+
+seed: 42
