@@ -77,7 +77,9 @@ class StateDataset(Dataset):
 
     def _simulate(self, initial_state, force_pattern, dt):
         """Simulate physics to get final state"""
-        self.env.state = initial_state.copy()
+        self.env.reset()
+        self.env.particles[0]["position"] = initial_state[:2].astype(np.float32)
+        self.env.particles[0]["velocity"] = initial_state[2:].astype(np.float32)
 
         num_steps = int(dt / self.env.dt)
         for step in range(num_steps):
@@ -85,7 +87,7 @@ class StateDataset(Dataset):
             action = force_pattern[action_idx]
             next_state, _, _ = self.env.step(action)
 
-        return self.env.state.copy()
+        return next_state.copy()
 
     def __len__(self):
         return len(self.samples)

@@ -29,7 +29,9 @@ from envs import PointMass2D
 
 def simulate_ground_truth(env, state, actions, dt):
     """Simulate physics to get ground truth final state"""
-    env.state = state.copy()
+    env.reset()
+    env.particles[0]["position"] = state[:2].astype(np.float32)
+    env.particles[0]["velocity"] = state[2:].astype(np.float32)
     num_steps = int(dt / env.dt)
 
     for step in range(num_steps):
@@ -37,7 +39,7 @@ def simulate_ground_truth(env, state, actions, dt):
         action = actions[action_idx]
         next_state, _, _ = env.step(action)
 
-    return env.state.copy()
+    return next_state.copy()
 
 
 def evaluate_sequential_model(model, test_data, dt, env, device):

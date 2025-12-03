@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(conda info:*)",
+      "Bash(conda run:*)",
+      "Bash(source:*)",
+      "Bash(conda install:*)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(conda remove:*)",
+      "Bash(find:*)",
+      "Bash(pkill:*)",
+      "Bash(pdftotext:*)",
+      "Bash(tree:*)",
+      "Bash(chmod:*)",
+      "Bash(pip install:*)",
+      "Bash(bash:*)",
+      "Bash(rm:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -29,7 +29,10 @@ from envs import PointMass2D
 def simulate_collision_scenario(env, state, actions, dt, device='cpu'):
     """Simulate physics to get ground truth final state"""
     # Set environment to initial state
-    env.state = state.cpu().numpy().squeeze()
+    state_np = state.cpu().numpy().squeeze()
+    env.reset()
+    env.particles[0]["position"] = state_np[:2].astype(np.float32)
+    env.particles[0]["velocity"] = state_np[2:].astype(np.float32)
 
     # Simulate for dt duration
     num_steps = int(dt / env.dt)
