@@ -267,7 +267,7 @@ class TwoNetworkTrainer:
                         actions_tensor = torch.FloatTensor(sample['actions']).unsqueeze(0).to(self.device)  # (1, seq_len, action_dim)
 
                         # Handle time - sample['time'] is a scalar from numpy array
-                        time_scalar = float(sample['time']) if hasattr(sample['time'], '__iter__') else float(sample['time'])
+                        time_scalar = sample['time'].item() if hasattr(sample['time'], 'item') else float(sample['time'])
                         time_tensor = torch.FloatTensor([[time_scalar]]).to(self.device)  # (1, 1)
 
                         horizon_tensor = torch.FloatTensor([[horizon]]).to(self.device)  # (1, 1)
